@@ -4,9 +4,13 @@ static struct tscreen* ts = NULL;
 static struct lcd_device* lcd = NULL;
 static char s_moving = 1;
 static struct snake* snake;
-char board[BOARD_WIDTH][BOARD_HEIGHT];
-int gg = 0;
-int game_speed = 2;
+static struct score* score;
+static char board[BOARD_WIDTH][BOARD_HEIGHT];
+static int gg = 0;
+static int game_speed = 2;
+
+
+/*******************************board actions*******************************/
 
 void* snakeTick (void* whatever) 
 {
@@ -20,7 +24,7 @@ start:
             }
 
             //add food
-            if(rand()%100<=30) addFood(1);
+            if(rand()%100<=10) addFood(1);
 
             //see where we are going
             x = snake->head->next->x;
@@ -47,13 +51,19 @@ start:
                     //remove tail
                     clearSquare(20,20,20*snake->head->prev->x,20*snake->head->prev->y);
                     snakeTailRemove();
-                    //no break here, we are adding the head anyways
+
+                    //add head
+                    printCircle(10,20*x,20*y,ARGB_YELLOW);
+                    snakeHeadInsert(x,y);
+                    printCircle(10,20*snake->head->next->next->x,20*snake->head->next->next->y,ARGB_GREEN);
+                    break;
 
                 case BT_FOOD:
                     //add head
                     printCircle(10,20*x,20*y,ARGB_YELLOW);
                     snakeHeadInsert(x,y);
                     printCircle(10,20*snake->head->next->next->x,20*snake->head->next->next->y,ARGB_GREEN);
+                    socreAdd(1);
                     break;
 
                 case BT_WALL:
@@ -78,6 +88,12 @@ game_over:
     }
 }
 
+void boardClear () {
+    for (int i=0;i<BOARD_WIDTH;i++)
+        for (int j=0;j<BOARD_WIDTH;j++)
+            board[i][j] = BT_EMPTY;
+}
+
 void addFood (int num) {
     for (int i=0;i<num;i++) {
         int x = random()%BOARD_WIDTH;
@@ -88,6 +104,60 @@ void addFood (int num) {
         board[x][y] = BT_FOOD;
         printCircle(10,20*x,20*y,ARGB_PINK);
     }
+}
+
+/*****************score and save file actions**********************/
+void scoreInit () {
+    FILE* save = fopen(SAVE_PATH,"r");
+    int file_score = 0;
+    if (fscanf(save,"highscore:%d",&file_score)!=1) {
+        DEBUG_INFO;
+        return;
+    }
+
+    score = (struct score*)malloc(sizeof(struct score));
+    score->high = file_score;
+    score->current = 0;
+
+    fclose (save);
+}
+
+void saveSync () {
+    FILE* save = fopen(SAVE_PATH,"r");
+    int file_score = 0;
+    if (fscanf(save,"highscore:%d",&file_score)!=1) {
+        DEBUG_INFO;
+        return;
+    }
+    fclose(save);
+
+    score->high = INT_MAX(score->high,score->current);
+    score->high = INT_MAX(file_score,score->high);
+    
+    save = fopen(SAVE_PATH,"w");
+    fprintf (save,"highscore:%d",score->high);
+    fclose(save);
+}
+void socrePrint () {
+    char score_text[100];
+
+    font* simfang = fontLoad("./assets/simfang.ttf");
+
+    sprintf(score_text,"High score:%d",score->high);
+    printText(score_text,simfang,30,strlen(score_text),(lcd->w-strlen(score_text)*15)/2,0);
+    sprintf(score_text,"Score:%d",score->current);
+    printText(score_text,simfang,30,strlen(score_text),(lcd->w-strlen(score_text)*15)/2,40);
+
+    fontUnload(simfang);
+    return;
+}
+void socreReset () {
+    score->high = INT_MAX(score->high,score->current);
+    score->current = 0;
+}
+void socreAdd (int val) {
+    score->current+=val;
+    score->high = INT_MAX(score->current,score->high);
 }
 
 struct snake_node* snakeNewNode (int x,int y) {
@@ -127,11 +197,6 @@ void snakeTailRemove () {
 
 }
 
-void boardClear () {
-    for (int i=0;i<BOARD_WIDTH;i++)
-        for (int j=0;j<BOARD_WIDTH;j++)
-            board[i][j] = BT_EMPTY;
-}
 
 void snakeInit () {
     snake = (struct snake*)malloc(sizeof(struct snake));
@@ -212,6 +277,7 @@ bool buttonReplace (struct button* button,void* data) {
     free(button->pixels);
     button->pixels = data;
     return lcd->paint(lcd,button->pixels,button->w,button->h,button->x,button->y);
+    return true;
 }
 
 bool buttonRemove (struct button* button,struct lcd_device* lcd) {
@@ -277,6 +343,7 @@ void boardRePaint () {
 }
 
 bool gameOverScreen () {
+
     struct button* play_button = buttonInit
         (bmpToArgb(PLAY_BUTTON_PATH,NULL,NULL),BUTTON_SIZE,BUTTON_SIZE,(lcd->w-BUTTON_SIZE)/2,lcd->h/2);
     struct button* exit_button = buttonInit
@@ -294,6 +361,7 @@ bool gameOverScreen () {
     //Print gg screen
     lcd->clear(lcd,ARGB_BLACK);
     printText("你寄了",simfang,100,3,250,100);
+    socrePrint();
     buttonAdd(play_button,lcd);
     buttonAdd(exit_button,lcd);
     buttonAdd(spd_1_button,lcd);
@@ -357,6 +425,8 @@ bool gameOverScreen () {
         }
     }
 
+    saveSync ();
+    socreReset ();
     buttonDestroy(spd_1_button);
     buttonDestroy(spd_2_button);
     buttonDestroy(spd_3_button);
@@ -382,10 +452,10 @@ bool startScreen () {
     struct button* spd_3_button = buttonInit
         (bmpToArgb(BUTTON_3_WHITE,NULL,NULL),BUTTON_SIZE,BUTTON_SIZE,(lcd->w-BUTTON_SIZE)/2+BUTTON_SIZE+10,lcd->h/2+BUTTON_SIZE+10);
 
-
     //Print start screen
     lcd->clear(lcd,ARGB_BLACK);
     printText("贪吃蛇",simfang,100,3,250,100);
+    socrePrint();
     buttonAdd(play_button,lcd);
     buttonAdd(exit_button,lcd);
     buttonAdd(spd_1_button,lcd);
@@ -481,6 +551,7 @@ bool pauseScreen () {
 
     //Print pause screen
     printText("已暂停",simfang,100,3,250,100);
+    socrePrint();
     buttonAdd(play_button,lcd);
     buttonAdd(exit_button,lcd);
     buttonAdd(spd_1_button,lcd);
@@ -497,6 +568,7 @@ bool pauseScreen () {
                 break;
             }
             if (isInButton(ts,exit_button)) {
+                saveSync ();
                 ret = false;
                 break;
             }
@@ -553,7 +625,7 @@ bool pauseScreen () {
     buttonDestroy(spd_3_button);
     fontUnload(simfang);
 
-    //return
+    //if all is good
     return ret;
 }
 
@@ -566,11 +638,15 @@ int main ()
     //set rand seed
     srand(time(NULL));
 
+    //initiate score
+    scoreInit();
+
     //start screen
     if (!startScreen()) goto exit;
 
     //clear board
     boardClear();
+
 
     //game screen here
     lcd->clear(lcd,ARGB_BLACK);

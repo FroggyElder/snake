@@ -15,6 +15,8 @@
 #define LCD0 "/dev/fb0"
 #define TS0 "/dev/input/event0"
 
+#define DEBUG_INFO printf("[%s:%d] in %s\n",__func__,__LINE__,__FILE__)
+
 #define ARGB_BLACK 0xff000000
 #define ARGB_WHITE 0xffffffff
 #define ARGB_GREEN 0xff66ff33
@@ -30,6 +32,21 @@ enum board_tile {
 void boardClear ();
 void boardRePaint ();
 
+#define INT_MAX(a,b) (a)>(b) ? (a) : (b)
+
+
+#define SAVE_PATH "./assets/save.cfg"
+struct score {
+    unsigned int current;
+    unsigned int high;
+};
+void scoreInit ();
+void saveSync ();
+void socrePrint ();
+void socreReset ();
+void socreAdd (int val);
+
+
 #define PLAY_BUTTON_PATH "./assets/play.bmp"
 #define EXIT_BUTTON_PATH "./assets/exit.bmp"
 #define BUTTON_1_WHITE "./assets/1x_white.bmp"
@@ -38,11 +55,7 @@ void boardRePaint ();
 #define BUTTON_2_YELLOW "./assets/1.5x_yellow.bmp"
 #define BUTTON_3_WHITE "./assets/2x_white.bmp"
 #define BUTTON_3_YELLOW "./assets/2x_yellow.bmp"
-
 #define BUTTON_SIZE 96
-
-#define DEBUG_INFO printf("[%s:%d] in %s\n",__func__,__LINE__,__FILE__)
-
 struct button {
     unsigned int* pixels;
     int x;
