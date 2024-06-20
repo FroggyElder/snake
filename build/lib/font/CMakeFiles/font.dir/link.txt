@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfont.a CMakeFiles/font.dir/font.c.o CMakeFiles/font.dir/truetype.c.o
+/usr/bin/ranlib libfont.a

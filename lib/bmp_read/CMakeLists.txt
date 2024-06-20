@@ -1,0 +1,1 @@
+add_library(bmp_read bmp_read.c)

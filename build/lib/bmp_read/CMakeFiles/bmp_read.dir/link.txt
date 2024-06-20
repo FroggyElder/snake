@@ -1,0 +1,2 @@
+/usr/bin/ar qc libbmp_read.a CMakeFiles/bmp_read.dir/bmp_read.c.o
+/usr/bin/ranlib libbmp_read.a

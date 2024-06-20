@@ -1,0 +1,15 @@
+/home/cy/C Workspace/projects/1-snake/build/CMakeFiles/snake.dir
+/home/cy/C Workspace/projects/1-snake/build/CMakeFiles/edit_cache.dir
+/home/cy/C Workspace/projects/1-snake/build/CMakeFiles/rebuild_cache.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/lcd/CMakeFiles/lcd.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/lcd/CMakeFiles/edit_cache.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/lcd/CMakeFiles/rebuild_cache.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/touch_screen/CMakeFiles/touch_screen.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/touch_screen/CMakeFiles/edit_cache.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/touch_screen/CMakeFiles/rebuild_cache.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/bmp_read/CMakeFiles/bmp_read.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/bmp_read/CMakeFiles/edit_cache.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/bmp_read/CMakeFiles/rebuild_cache.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/font/CMakeFiles/font.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/font/CMakeFiles/edit_cache.dir
+/home/cy/C Workspace/projects/1-snake/build/lib/font/CMakeFiles/rebuild_cache.dir

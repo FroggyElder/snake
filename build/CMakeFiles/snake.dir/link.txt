@@ -1,0 +1,1 @@
+arm-linux-gcc CMakeFiles/snake.dir/snake.c.o -o snake  lib/font/libfont.a lib/lcd/liblcd.a lib/touch_screen/libtouch_screen.a lib/bmp_read/libbmp_read.a -lpthread -lm 

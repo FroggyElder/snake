@@ -1,0 +1,2 @@
+/usr/bin/ar qc libtouch_screen.a CMakeFiles/touch_screen.dir/touch_screen.c.o
+/usr/bin/ranlib libtouch_screen.a
