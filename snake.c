@@ -53,14 +53,14 @@ start:
                     snakeTailRemove();
 
                     //add head
-                    printCircle(10,20*x,20*y,ARGB_YELLOW);
+                    printCircle(10,20*x,20*y,ARGB_BLUE);
                     snakeHeadInsert(x,y);
                     printCircle(10,20*snake->head->next->next->x,20*snake->head->next->next->y,ARGB_GREEN);
                     break;
 
                 case BT_FOOD:
                     //add head
-                    printCircle(10,20*x,20*y,ARGB_YELLOW);
+                    printCircle(10,20*x,20*y,ARGB_BLUE);
                     snakeHeadInsert(x,y);
                     printCircle(10,20*snake->head->next->next->x,20*snake->head->next->next->y,ARGB_GREEN);
                     socreAdd(1);
@@ -160,6 +160,8 @@ void socreAdd (int val) {
     score->high = INT_MAX(score->current,score->high);
 }
 
+
+/************************snake actions******************************/
 struct snake_node* snakeNewNode (int x,int y) {
     struct snake_node* new_node = (struct snake_node*)malloc(sizeof(struct snake_node));
     new_node->x = x;
@@ -167,6 +169,20 @@ struct snake_node* snakeNewNode (int x,int y) {
     new_node->next = new_node;
     new_node->prev = new_node;
     return new_node;
+}
+
+void snakeInit () {
+    snake = (struct snake*)malloc(sizeof(struct snake));
+    snake->head = snakeNewNode(0,0);
+
+    snakeHeadInsert(0,0);
+    snakeHeadInsert(1,0);
+    snakeHeadInsert(2,0);
+    snakeHeadInsert(3,0);
+
+    snake->heading = H_RIGHT;
+
+    snakePrint();
 }
 
 void snakeHeadInsert (int x,int y) {
@@ -197,21 +213,6 @@ void snakeTailRemove () {
 
 }
 
-
-void snakeInit () {
-    snake = (struct snake*)malloc(sizeof(struct snake));
-    snake->head = snakeNewNode(0,0);
-
-    snakeHeadInsert(0,0);
-    snakeHeadInsert(1,0);
-    snakeHeadInsert(2,0);
-    snakeHeadInsert(3,0);
-
-    snake->heading = H_RIGHT;
-
-    snakePrint();
-}
-
 void snakeReset () {
     while (snake->head->next!=snake->head) snakeTailRemove();
     snakeHeadInsert(0,0);
@@ -222,6 +223,7 @@ void snakeReset () {
 
     snakePrint();
 }
+
 void snakeKill () {
     while (snake->head->next!=snake->head) snakeTailRemove();
     free(snake->head);
@@ -235,6 +237,8 @@ void snakePrint () {
         printCircle(10,20*p->x,20*p->y,ARGB_GREEN);
     }
 }
+
+/***************************button actions*********************************/
 
 struct button* buttonInit (void* data,int w,int h,int x,int y) {
     struct button* new_button = (struct button*)malloc(sizeof(struct button));
@@ -299,48 +303,7 @@ bool isInButton (struct tscreen* ts,struct button* button) {
     return ts->status->x>x0&&ts->status->x<x1&&ts->status->y>y0&&ts->status->y<y1;
 }
 
-void printText (char* text,font* font,int size,int len,int x,int y) {
-    int w = size*len;
-    int h = size;
-
-    fontSetSize(font,size);
-    bitmap* map = createBitmapWithInit(w,h,lcd->pixel_size,getColor(0,0,0,0));
-    fontPrint(font,map,0,0,text,0xffffffff,0);
-
-    lcd->paint(lcd,map->map,w,h,x,y);
-
-    destroyBitmap(map);
-}
-
-void printCircle (int r,int x,int y,unsigned int c) {
-    int d = r+r;
-    unsigned int* p = lcd->ptr + 4*(y*lcd->w+x);
-
-    for (int i=0;i<d;i++)
-        for (int j=0;j<d;j++)
-            if (abs(i-r)*abs(i-r)+abs(j-r)*abs(j-r) < r*r)
-                *(p+(i*lcd->w+j)) = c;
-
-}
-
-void clearSquare (int w,int h,int x,int y) {
-    unsigned int* p = lcd->ptr + 4*(y*lcd->w+x);
-
-    for (int i=0;i<h;i++)
-        for (int j=0;j<w;j++)
-                *(p+(i*lcd->w+j)) = 0;
-}
-
-void boardRePaint () {
-    lcd->clear(lcd,ARGB_BLACK);
-
-    snakePrint();
-
-    for (int i=0;i<BOARD_WIDTH;i++)
-        for (int j=0;j<BOARD_HEIGHT;j++)
-            if(board[i][j]==BT_FOOD) printCircle(10,20*i,20*j,ARGB_PINK);
-    
-}
+/********************************Screens**************************************/
 
 bool gameOverScreen () {
 
@@ -627,6 +590,50 @@ bool pauseScreen () {
 
     //if all is good
     return ret;
+}
+
+/******************************misc*************************************/
+
+void printText (char* text,font* font,int size,int len,int x,int y) {
+    int w = size*len;
+    int h = size;
+
+    fontSetSize(font,size);
+    bitmap* map = createBitmapWithInit(w,h,lcd->pixel_size,getColor(0,0,0,0));
+    fontPrint(font,map,0,0,text,0xffffffff,0);
+
+    lcd->paint(lcd,map->map,w,h,x,y);
+
+    destroyBitmap(map);
+}
+
+void printCircle (int r,int x,int y,unsigned int c) {
+    int d = r+r;
+    unsigned int* p = lcd->ptr + 4*(y*lcd->w+x);
+
+    for (int i=0;i<d;i++)
+        for (int j=0;j<d;j++)
+            if (abs(i-r)*abs(i-r)+abs(j-r)*abs(j-r) < r*r)
+                *(p+(i*lcd->w+j)) = c;
+
+}
+
+void clearSquare (int w,int h,int x,int y) {
+    unsigned int* p = lcd->ptr + 4*(y*lcd->w+x);
+
+    for (int i=0;i<h;i++)
+        for (int j=0;j<w;j++)
+                *(p+(i*lcd->w+j)) = 0;
+}
+
+void boardRePaint () {
+    lcd->clear(lcd,ARGB_BLACK);
+
+    snakePrint();
+
+    for (int i=0;i<BOARD_WIDTH;i++)
+        for (int j=0;j<BOARD_HEIGHT;j++)
+            if(board[i][j]==BT_FOOD) printCircle(10,20*i,20*j,ARGB_PINK);
 }
 
 int main () 

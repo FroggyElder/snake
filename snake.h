@@ -22,6 +22,8 @@
 #define ARGB_GREEN 0xff66ff33
 #define ARGB_YELLOW 0xffccff33
 #define ARGB_PINK 0xffffccff
+#define ARGB_PURPLE 0xff9122ff
+#define ARGB_BLUE 0xff91D2ff
 
 #define BOARD_WIDTH 40
 #define BOARD_HEIGHT 24
