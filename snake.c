@@ -122,6 +122,7 @@ void scoreInit () {
     fclose (save);
 }
 
+
 void saveSync () {
     FILE* save = fopen(SAVE_PATH,"r");
     int file_score = 0;
@@ -138,6 +139,8 @@ void saveSync () {
     fprintf (save,"highscore:%d",score->high);
     fclose(save);
 }
+
+
 void socrePrint () {
     char score_text[100];
 
@@ -151,10 +154,13 @@ void socrePrint () {
     fontUnload(simfang);
     return;
 }
+
 void socreReset () {
     score->high = INT_MAX(score->high,score->current);
     score->current = 0;
 }
+
+
 void socreAdd (int val) {
     score->current+=val;
     score->high = INT_MAX(score->current,score->high);
@@ -713,6 +719,8 @@ int main ()
     pthread_exit(&snake_pid);
 
 exit:
+    //clear snake
+    snakeKill();
 
     //clear screen
     lcd->clear(lcd,ARGB_BLACK);
