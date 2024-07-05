@@ -48,7 +48,6 @@ void socrePrint ();
 void socreReset ();
 void socreAdd (int val);
 
-
 #define PLAY_BUTTON_PATH "./assets/play.bmp"
 #define EXIT_BUTTON_PATH "./assets/exit.bmp"
 #define BUTTON_1_WHITE "./assets/1x_white.bmp"

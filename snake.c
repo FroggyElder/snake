@@ -660,7 +660,6 @@ int main ()
     //clear board
     boardClear();
 
-
     //game screen here
     lcd->clear(lcd,ARGB_BLACK);
     snakeInit();
